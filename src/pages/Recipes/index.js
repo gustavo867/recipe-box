@@ -1,83 +1,105 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import styled from 'styled-components';
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import styled from "styled-components";
 
-import arrow from '../../assets/images/arrow-left.svg';
+import arrow from "../../assets/images/arrow-left.svg";
 
-export default class Recipes extends React.Component {
-  state = {
-    loading: false,
-    meal: null,
-  };
+export default function Recipes() {
+  const [loading, setLoading] = useState(true);
+  const [meal, setMeal] = useState(undefined);
 
-  async componentDidMount() {
+  const getMeals = async () => {
     const url = "https://www.themealdb.com/api/json/v1/1/random.php";
     const response = await fetch(url);
     const data = await response.json();
-    this.setState({ meal: data.meals[0] });
-  }
 
-  render() {
+    setMeal(data.meals[0]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    getMeals();
+  }, []);
+
+  if (meal === undefined) {
     return (
       <Container>
-        <Link to="/">
-         <img src={arrow}/>
-        </Link>
-          
-          {this.state.loading || !this.state.meal ? (
-            <h1 color="#000">Loading ...</h1>
-          ) : (   
-          <CardContainer>
-            <TextHome>
-              <h1>Name: {this.state.meal.strMeal}</h1>
-              <h2>
-              Ingredients: 
-              </h2>
-              <p>{this.state.meal.strIngredient1}</p>     
-              <p>{this.state.meal.strIngredient2}</p>
-              <p>{this.state.meal.strIngredient3}</p>
-              <p> {this.state.meal.strIngredient4}</p> 
-              <h2>Measures :</h2>  
-              <p> {this.state.meal.strMeasure1}</p> 
-              <p> {this.state.meal.strMeasure2}</p> 
-              <p> {this.state.meal.strMeasure3}</p> 
-              <p> {this.state.meal.strMeasure4}</p> 
-              <p> {this.state.meal.strMeasure5}</p> 
-              <p> {this.state.meal.strMeasure6}</p> 
-              <p> {this.state.meal.strMeasure7}</p> 
-              <p> {this.state.meal.strMeasure8}</p> 
-              <p> {this.state.meal.strMeasure9}</p> 
-              <p> {this.state.meal.strMeasure10}</p> 
-              <p> {this.state.meal.strMeasure11}</p> 
-              <p> {this.state.meal.strMeasure12}</p> 
-              <p> {this.state.meal.strMeasure13}</p> 
-              <p> {this.state.meal.strMeasure14}</p> 
-                <Link to="/recipes">
-                <h3>To see a new recipe, reload the page</h3>
-                </Link>  
-            </TextHome>
-            <Instructions>
-                <img src={this.state.meal.strMealThumb}/>
-                <h2>Instructions:</h2>
-                <p>{this.state.meal.strInstructions}</p>
-            </Instructions>
-                           
-          </CardContainer>
-          )}
+        <h1>Loading ...</h1>
       </Container>
-    )
+    );
   }
+
+  return (
+    <Container>
+      <Link to="/">
+        <img src={arrow} />
+      </Link>
+
+      {loading && meal ? (
+        <h1 color="#000">Loading ...</h1>
+      ) : (
+        <CardContainer>
+          <TextHome>
+            <h1>Name: {meal.strMeal}</h1>
+            <h2>Ingredients:</h2>
+            <p>{meal.strIngredient1}</p>
+            <p>{meal.strIngredient2}</p>
+            <p>{meal.strIngredient3}</p>
+            <p> {meal.strIngredient4}</p>
+            <h2>Measures :</h2>
+            <p> {meal.strMeasure1}</p>
+            <p> {meal.strMeasure2}</p>
+            <p> {meal.strMeasure3}</p>
+            <p> {meal.strMeasure4}</p>
+            <p> {meal.strMeasure5}</p>
+            <p> {meal.strMeasure6}</p>
+            <p> {meal.strMeasure7}</p>
+            <p> {meal.strMeasure8}</p>
+            <p> {meal.strMeasure9}</p>
+            <p> {meal.strMeasure10}</p>
+            <p> {meal.strMeasure11}</p>
+            <p> {meal.strMeasure12}</p>
+            <p> {meal.strMeasure13}</p>
+            <p> {meal.strMeasure14}</p>
+            <ReloadButton onClick={() => getMeals()}>
+              <h3>Click ro reload</h3>
+            </ReloadButton>
+          </TextHome>
+          <Instructions>
+            <img src={meal.strMealThumb} />
+            <h2>Instructions:</h2>
+            <p>{meal.strInstructions}</p>
+          </Instructions>
+        </CardContainer>
+      )}
+    </Container>
+  );
 }
 
 export const Container = styled.div`
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
   background-color: #f0f0f5;
-  height: 100%;
+  height: 100vh;
   text-overflow: ellipsis;
+`;
+
+export const ReloadButton = styled.button`
+  display: flex;
+  border-radius: 8px;
+  background: red;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.8rem;
+  width: 10vw;
+
+  h3 {
+    font-size: 1rem;
+    align-self: center;
+  }
 `;
 
 export const CardContainer = styled.div`
@@ -86,10 +108,13 @@ export const CardContainer = styled.div`
   align-items: center;
   justify-content: center;
   text-overflow: ellipsis;
-  overflow: hidden;
 
-  width: 80vw;
-  height: 70vh;
+  padding: 1rem;
+
+  max-width: 90vw;
+  min-width: 80vw;
+  min-height: 70vh;
+  border-radius: 2rem;
 
   img {
     width: 400px;
@@ -99,7 +124,7 @@ export const CardContainer = styled.div`
     margin-bottom: 10px;
   }
 
-  background-color: #D6E3F8;
+  background-color: #d6e3f8;
 `;
 
 export const TextHome = styled.div`
@@ -119,12 +144,12 @@ export const TextHome = styled.div`
   }
   h1 {
     font-size: 28px;
-    color: rgba(0, 0, 0, 0.6);  
+    color: rgba(0, 0, 0, 0.6);
   }
   h2 {
     margin-top: 5px;
     font-size: 24px;
-    color: rgba(0, 0, 0, 0.6);  
+    color: rgba(0, 0, 0, 0.6);
   }
   a {
     text-decoration: none;
@@ -134,11 +159,6 @@ export const TextHome = styled.div`
     margin-top: 10px;
     color: rgba(0, 0, 0, 0.8);
     font-size: 20px;
-  }
-
-  h3:hover {
-    text-decoration: none;
-    color: rgba(108, 99, 255, 0.5)
   }
 `;
 
@@ -152,7 +172,7 @@ export const Instructions = styled.div`
 
   h2 {
     font-size: 24px;
-    color: rgba(0, 0, 0, 0.6);  
+    color: rgba(0, 0, 0, 0.6);
   }
   p {
     text-overflow: ellipsis;
